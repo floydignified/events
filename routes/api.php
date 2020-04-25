@@ -9,13 +9,12 @@ Route::group([
     /**
      * Events module
      */
-    Route::group(["prefix" => "events"], function () {
+    Route::group([
+        "prefix" => "events",
+        "namespace" => "Events",
+    ], function () {
 
-        Route::get('/', function () {
-            return response()->json(["events" => true]);
-        });
-        Route::get('/create', function () {
-            return response()->json(["events" => true, "create" => true]);
-        });
+        Route::get("/", "EventController@fetch");
+        Route::post("/create", "EventController@define");
     });
 });
