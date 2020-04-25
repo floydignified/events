@@ -3,6 +3,7 @@
 namespace App\Data\Models\Events;
 
 use App\Data\Models\BaseModel;
+use Carbon\Carbon;
 
 class Event extends BaseModel
 {
@@ -15,6 +16,15 @@ class Event extends BaseModel
         'event_name',
         'start_date',
         'end_date',
+    ];
+
+    /**
+     * List of appended fields
+     *
+     * @var array
+     */
+    protected $appends = [
+        'event_dates',
     ];
 
     /**
@@ -45,5 +55,29 @@ class Event extends BaseModel
     public function metas()
     {
         return $this->hasMany('App\Data\Models\Events\EventMeta');
+    }
+
+    /**
+     * Event dates accessor
+     *
+     * List of all dates with event
+     * To remove computation/overhead from frontend
+     */
+    protected function getEventDatesAttribute()
+    {
+        //initialize event dates array
+        $event_dates = [];
+
+        //loop through all metas
+        foreach ($this->metas as $meta) {
+            $event_dates = array_merge(
+                $event_dates,
+                Carbon::parse($meta->repeat_start_date)
+                    ->toPeriod($this->end_date, '1 week')
+                    ->toArray()
+            );
+        }
+
+        return $event_dates;
     }
 }
