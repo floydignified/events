@@ -4,7 +4,7 @@
  * Default route (events page view)
  */
 Route::get("/", function () {
-    //TODO: set events view
+    return view('app');
 })->name("default");
 
 /**
