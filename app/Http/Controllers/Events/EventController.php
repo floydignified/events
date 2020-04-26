@@ -31,16 +31,20 @@ class EventController extends BaseController
         if (!$event) {
             return response()->json([
                 "message" => "No event found.",
-                "data" => [],
+                "event" => [],
                 "parameters" => $data,
             ], 404);
         }
 
+        //fetch selected day names
+        $selected_days = [];
+        foreach ($event->metas as $meta) {
+            $selected_days[] = strtolower(Carbon::parse($meta->repeat_start_date)->format('l'));
+        }
+
         return response()->json([
             "message" => "Successfully fetched an event",
-            "data" => [
-                "event" => $event,
-            ],
+            "event" => array_merge($event->toArray(), ["selected_days" => $selected_days]),
             "parameters" => $data,
         ], 200);
     }
@@ -61,7 +65,7 @@ class EventController extends BaseController
         if (!isset($data['days'])) {
             return response()->json([
                 "message" => "Days are required.",
-                "data" => [],
+                "event" => [],
                 "parameters" => $data,
             ], 500);
         }
@@ -70,7 +74,7 @@ class EventController extends BaseController
         if (!$event->save($data)) {
             return response()->json([
                 "message" => $event->errors(),
-                "data" => [],
+                "event" => [],
                 "parameters" => $data,
             ], 500);
         }
@@ -96,9 +100,7 @@ class EventController extends BaseController
 
         return response()->json([
             "message" => "Successfully created an event",
-            "data" => [
-                "event" => $event,
-            ],
+            "event" => $event,
             "parameters" => $data,
         ], 200);
     }
