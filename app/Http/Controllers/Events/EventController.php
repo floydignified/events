@@ -62,7 +62,7 @@ class EventController extends BaseController
         $event = new Event;
 
         //validate if metas are set
-        if (!isset($data['days'])) {
+        if (!isset($data['days']) || count($data['days']) <= 0) {
             return response()->json([
                 "message" => "Days are required.",
                 "event" => [],
